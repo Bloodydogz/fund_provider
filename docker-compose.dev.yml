@@ -1,0 +1,29 @@
+version: '3.5'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bundle exec rails s -p 3000
+    restart: always
+    environment:
+      - RAILS_ENV=development
+      - JAVA_OPTS=-server -Xms128m -Xmx1g -XX:+UseCodeCacheFlushing -Djava.awt.headless=true -Djruby.compile.mode=OFF
+      - DB_HOST=10.0.0.1
+      - ES_HOST=["10.0.0.1:9200"]
+      - REDIS_HOST=redis://10.0.0.1:6379/1
+      - ITAX_SERVER_HOST=10.0.0.1:3001
+    #  - SPIDUS_HOST=10.0.0.1:8000
+    volumes:
+      - ./app:/app/app
+      - ./log:/app/log
+      - ./public/data:/app/public/data
+      - ./config/database.yml:/app/config/database.yml
+      - ./config/settings/development.yml:/app/config/settings/development.yml
+    ports: 
+      - 3003:3000
+    networks:
+      - dev-services-network
+networks:
+  dev-services-network:
+    external: true
